@@ -34,11 +34,13 @@ public class CourseController {
             Course course = optionalCourse.get();
             course.setCode(courseDetails.getCode());
             course.setTitle(courseDetails.getTitle());
+            course.setDepartment(courseDetails.getDepartment());
+            course.setCredits(courseDetails.getCredits());
             return ResponseEntity.ok(repo.save(course));
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
+    } // <<< THIS BRACE WAS MISSING
 
     // DELETE a course
     @DeleteMapping("/{id}")

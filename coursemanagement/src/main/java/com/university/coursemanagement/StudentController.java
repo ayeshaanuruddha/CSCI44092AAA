@@ -12,14 +12,23 @@ import java.util.Optional;
 public class StudentController {
 
     @Autowired
-    private StudentRepository studentRepository; // Student Repository
-
+    private StudentRepository studentRepository;
     @Autowired
-    private CourseRepository courseRepository; // Course Repository
+    private CourseRepository courseRepository;
+    @Autowired
+    private ResultRepository resultRepository;
+    @Autowired
+    private GpaService gpaService;
 
     @GetMapping
     public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+        List<Student> students = studentRepository.findAll();
+        // Calculate GPA for each student before returning the list
+        students.forEach(student -> {
+            List<Result> results = resultRepository.findByStudentId(student.getId());
+            student.setGpa(gpaService.calculateGpa(results));
+        });
+        return students;
     }
 
     @PostMapping
@@ -27,18 +36,18 @@ public class StudentController {
         return studentRepository.save(student);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}") //Following ekel.kln.ac.lk
     public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student studentDetails) {
         Optional<Student> optionalStudent = studentRepository.findById(id);
         if (optionalStudent.isPresent()) {
             Student student = optionalStudent.get();
-            student.setStudentId(studentDetails.getStudentId());
             student.setName(studentDetails.getName());
             student.setEmail(studentDetails.getEmail());
             student.setAcademicYear(studentDetails.getAcademicYear());
             student.setCountry(studentDetails.getCountry());
             student.setCity(studentDetails.getCity());
             student.setInterests(studentDetails.getInterests());
+            
             
             return ResponseEntity.ok(studentRepository.save(student));
         } else {
@@ -55,8 +64,7 @@ public class StudentController {
             return ResponseEntity.notFound().build();
         }
     }
-
-    // METHOD ENROLLMENT
+    
     @PostMapping("/{studentId}/courses/{courseId}")
     public ResponseEntity<Student> enrollStudentInCourse(@PathVariable Long studentId, @PathVariable Long courseId) {
         Optional<Student> optionalStudent = studentRepository.findById(studentId);
@@ -66,7 +74,7 @@ public class StudentController {
             Student student = optionalStudent.get();
             Course course = optionalCourse.get();
 
-            student.getEnrolledCourses().add(course); // Add course to student's set
+            student.getEnrolledCourses().add(course);
             studentRepository.save(student);
 
             return ResponseEntity.ok(student);

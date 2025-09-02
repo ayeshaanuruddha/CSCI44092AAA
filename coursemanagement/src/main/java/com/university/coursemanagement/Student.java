@@ -15,17 +15,18 @@ public class Student {
     @GeneratedValue
     private Long id;
 
-    private String studentId;
     private String name;
     private String email;
     private String academicYear;
     private String country;
     private String city;
+    private String employeeId;
+    private String jobTitle;
+    private String department;
 
     @ElementCollection
     private Set<String> interests = new HashSet<>();
 
-    // --- Course relationship ---
     @ManyToMany
     @JoinTable(
         name = "student_courses",
@@ -35,4 +36,7 @@ public class Student {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Course> enrolledCourses = new HashSet<>();
+
+    @Transient // Tells JPA not to create a database column for this field
+    private Double gpa;
 }

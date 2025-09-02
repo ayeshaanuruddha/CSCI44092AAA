@@ -22,10 +22,11 @@ public class Course {
 
     private String title;
     private String code;
+    private String department;
+    private int credits; 
 
-    // --- Studentrelationship ---
     @ManyToMany(mappedBy = "enrolledCourses")
-    @JsonIgnore // Prevents infinite loops when sending data as JSON
+    @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Student> enrolledStudents = new HashSet<>();
