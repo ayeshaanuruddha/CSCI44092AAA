@@ -1,19 +1,32 @@
 package com.university.coursemanagement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Entity //Tells JPA that this class is a database table.
-@Data   // Lombok annotation to automatically create getters, setters, etc.
+import java.util.HashSet;
+import java.util.Set;
 
+@Entity
+@Data
 public class Course {
-  
-    @Id // Marks this field as the primary key.
-    @GeneratedValue //Automatically generates the ID value.
-    private Long id; // 
 
-    private String title; // CourseName
-    private String code;  // CourseCode  
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private String title;
+    private String code;
+
+    // --- Studentrelationship ---
+    @ManyToMany(mappedBy = "enrolledCourses")
+    @JsonIgnore // Prevents infinite loops when sending data as JSON
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Student> enrolledStudents = new HashSet<>();
 }
